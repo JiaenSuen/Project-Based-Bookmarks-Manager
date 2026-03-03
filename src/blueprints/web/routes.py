@@ -53,6 +53,19 @@ def project_create():
         return redirect(url_for('web.project_list'))
     flash('Form validation failed', 'danger')
     return redirect(url_for('web.project_list'))
+@web_bp.route('/project/<int:project_id>/delete', methods=['POST'])
+def project_delete(project_id):
+    project = Project.query.get_or_404(project_id)
+
+    db.session.delete(project)
+    db.session.commit()
+
+    flash('Project deleted', 'success')
+    return redirect(url_for('web.project_list'))
+
+
+
+
 
 @web_bp.route('/project/<int:project_id>')
 def project_detail(project_id):

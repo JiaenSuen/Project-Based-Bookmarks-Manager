@@ -31,6 +31,16 @@
               <p class="card-text text-muted">{{ p.description }}</p>
             {% endif %}
             <p class="text-muted small">Bookmark Count : {{ p.bookmarks|length }}</p>
+
+            <form method="post"
+              action="{{ url_for('web.project_delete', project_id=p.id) }}">
+              {{ form.hidden_tag() }}
+              <button type="submit" class="btn btn-danger btn-sm">
+                Delete
+              </button>
+            </form>
+
+            </form>
           </div>
         </div>
       </div>
