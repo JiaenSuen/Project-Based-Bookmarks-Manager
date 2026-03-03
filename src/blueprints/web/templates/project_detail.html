@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
+{% block content %}
+<h1>{{ project.name }}</h1>
+{% if project.description %}
+  <p class="text-muted">{{ project.description }}</p>
+{% endif %}
+
+<a href="{{ url_for('web.project_list') }}" class="btn btn-secondary mb-3">Return to Project List</a>
+
+<h3>Add bookmark</h3>
+<form method="post" action="{{ url_for('web.bookmark_create', project_id=project.id) }}" class="mb-4">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">
+    {{ form.title.label }} {{ form.title(class="form-control") }}
+  </div>
+  <div class="mb-3">
+    {{ form.url.label }} {{ form.url(class="form-control") }}
+  </div>
+  <div class="mb-3">
+    {{ form.description.label }} {{ form.description(class="form-control", rows=3) }}
+  </div>
+  {{ form.submit(class="btn btn-primary") }}
+</form>
+
+<h3>Bookmarks List</h3>
+{% if project.bookmarks %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Link</th>
+        <th>Description</th>
+        <th>Operate</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in project.bookmarks %}
+        <tr>
+          <td>{{ b.title }}</td>
+          <td><a href="{{ b.url }}" target="_blank" rel="noopener">{{ b.url|truncate(60) }}</a></td>
+          <td>{{ b.description or '' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('web.bookmark_delete', bookmark_id=b.id) }}" style="display:inline;">
+              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Confirm deletion?');">delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="text-muted">The project has no bookmarks</p>
+{% endif %}
+{% endblock %}

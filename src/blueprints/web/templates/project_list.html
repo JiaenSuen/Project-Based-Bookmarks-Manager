@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Project List{% endblock %}
+
+{% block content %}
+<h1>Project</h1>
+
+<form method="post" action="{{ url_for('web.project_create') }}" class="mb-4">
+  {{ form.hidden_tag() }}
+  <div class="row g-3">
+    <div class="col-md-5">
+      {{ form.name(class="form-control", placeholder="New Project Name") }}
+    </div>
+    <div class="col-md-5">
+      {{ form.description(class="form-control", placeholder="Description (optional)") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.submit(class="btn btn-primary w-100") }}
+    </div>
+  </div>
+</form>
+
+{% if projects %}
+  <div class="row">
+    {% for p in projects %}
+      <div class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><a href="{{ url_for('web.project_detail', project_id=p.id) }}">{{ p.name }}</a></h5>
+            {% if p.description %}
+              <p class="card-text text-muted">{{ p.description }}</p>
+            {% endif %}
+            <p class="text-muted small">Bookmark Count : {{ p.bookmarks|length }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">There are no projects yet.</p>
+{% endif %}
+{% endblock %}
