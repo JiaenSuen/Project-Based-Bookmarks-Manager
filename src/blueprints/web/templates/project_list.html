@@ -10,7 +10,7 @@
   {{ form.hidden_tag() }}
   
   <div class="mb-3">
-    {{ form.name.label(class="form-label") }}
+    {{ form.name.label(class="form-label")  }}
     {{ form.name(class="form-control") }}
   </div>
   
@@ -61,17 +61,22 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <form method="post" action="{{ url_for('web.project_update', project_id=p.id) }}" novalidate>
-                {{ edit_form.hidden_tag() }}  <!-- 提供 csrf_token -->
+                {{ edit_form.hidden_tag() }}  
 
                 <div class="modal-body">
                   <div class="mb-3">
                     <label class="form-label">Project Name</label>
-                    <input type="text" name="name" class="form-control" value="{{ p.name }}" required maxlength="100">
+                    <input type="text" name="name" class="form-control" 
+                      value="{{ p.name }}" required maxlength="100" 
+                      autocomplete="off">
                   </div>
                   
                   <div class="mb-3">
                     <label class="form-label">Description</label>
-                    <textarea name="description" class="form-control" rows="3">{{ p.description or '' }}</textarea>
+                    <textarea name="description" class="form-control" rows="3" 
+                              autocomplete="new-project-description">
+                      {{ p.description or '' }}
+                    </textarea>
                   </div>
                 </div>
 
