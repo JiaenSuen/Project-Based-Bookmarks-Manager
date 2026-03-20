@@ -3,55 +3,91 @@
 {% block title %}{{ project.name }}{% endblock %}
 
 {% block content %}
-<h1>{{ project.name }}</h1>
+
+<h1 class="mb-1">{{ project.name }}</h1>
+
 {% if project.description %}
-  <p class="text-muted">{{ project.description }}</p>
+  <p class="text-muted mb-4">{{ project.description }}</p>
 {% endif %}
 
-<a href="{{ url_for('web.project_list') }}" class="btn btn-secondary mb-3">Return to Project List</a>
+<a href="{{ url_for('web.project_list') }}" class="btn btn-outline-secondary mb-4">
+  ← Back to Projects
+</a>
 
-<h3>Add bookmark</h3>
-<form method="post" action="{{ url_for('web.bookmark_create', project_id=project.id) }}" class="mb-4">
-  {{ form.hidden_tag() }}
+<!-- Create new bookmark -->
+<h3 class="mt-4">Add New Bookmark</h3>
+<form method="post" action="{{ url_for('web.bookmark_create', project_id=project.id) }}" class="mb-5" autocomplete="off">
+  {{ create_form.hidden_tag() }}
+
+  <!-- Honeypot fields (anti-bot) -->
+  <input type="text" name="dummy_text" autocomplete="off" style="display:none; position:absolute; left:-9999px;">
+  <input type="password" name="dummy_password" autocomplete="off" style="display:none; position:absolute; left:-9999px;">
+
   <div class="mb-3">
-    {{ form.title.label }} {{ form.title(class="form-control") }}
+    {{ create_form.title.label(class="form-label") }}
+    {{ create_form.title(class="form-control") }}
   </div>
+
   <div class="mb-3">
-    {{ form.url.label }} {{ form.url(class="form-control") }}
+    {{ create_form.url.label(class="form-label") }}
+    {{ create_form.url(class="form-control") }}
   </div>
+
   <div class="mb-3">
-    {{ form.description.label }} {{ form.description(class="form-control", rows=3) }}
+    {{ create_form.description.label(class="form-label") }}
+    {{ create_form.description(class="form-control") }}
   </div>
-  {{ form.submit(class="btn btn-primary") }}
+
+  {{ create_form.submit(class="btn btn-primary") }}
 </form>
 
-<h3>Bookmarks List</h3>
+<!-- Bookmarks list -->
+<h3>Bookmarks</h3>
+
 {% if project.bookmarks %}
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Link</th>
-        <th>Description</th>
-        <th>Operate</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for b in project.bookmarks %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
         <tr>
-          <td>{{ b.title }}</td>
-          <td><a href="{{ b.url }}" target="_blank" rel="noopener">{{ b.url|truncate(60) }}</a></td>
-          <td>{{ b.description or '' }}</td>
-          <td>
-            <form method="post" action="{{ url_for('web.bookmark_delete', bookmark_id=b.id) }}" style="display:inline;">
-              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Confirm deletion?');">delete</button>
-            </form>
-          </td>
+          <th>Title</th>
+          <th>URL</th>
+          <th>Description</th>
+          <th class="text-end">Actions</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for b in project.bookmarks %}
+          <tr {% if editing_bookmark and editing_bookmark.id == b.id %}class="table-warning"{% endif %}>
+            <td>{{ b.title }}</td>
+            <td>
+              <a href="{{ b.url }}" target="_blank" rel="noopener noreferrer">
+                {{ b.url|truncate(60) }}
+              </a>
+            </td>
+            <td>{{ b.description or '<span class="text-muted fst-italic">—</span>'|safe }}</td>
+            <td class="text-end">
+              <!-- Edit button -->
+              <a href="{{ url_for('web.bookmark_edit', bookmark_id=b.id) }}"
+                 class="btn btn-sm btn-outline-primary me-1">
+                Edit
+              </a>
+
+              <!-- Delete form -->
+              <form method="post" action="{{ url_for('web.bookmark_delete', bookmark_id=b.id) }}"
+                    style="display:inline;" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('Delete this bookmark?');">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% else %}
-  <p class="text-muted">The project has no bookmarks</p>
+  <p class="text-muted fst-italic">No bookmarks yet.</p>
 {% endif %}
+
 {% endblock %}
